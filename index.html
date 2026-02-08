@@ -6,159 +6,81 @@
   <title>納帝思學員專區</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    body { background-color: #f5f5f5; min-height: 100vh; padding-bottom: 70px; } /* 預留底部空間 */
-    .hidden { display: none !important; }
-    
-    /* 載入動畫 */
-    .loader-wrapper { 
-      position: fixed; top:0; left:0; width:100%; height:100%; 
-      background: #fff; z-index:99; display: flex; 
-      justify-content: center; align-items: center; flex-direction: column; 
-    }
-    
-    /* 底部導航列 (App 風格) */
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 0; width: 100%;
-      background: white; border-top: 1px solid #dbdbdb;
-      display: flex; justify-content: space-around; padding: 10px 0;
-      z-index: 50; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-    .nav-item {
-      text-align: center; color: #b5b5b5; cursor: pointer; flex: 1;
-    }
-    .nav-item.active { color: #3273dc; font-weight: bold; }
-    .nav-item i { display: block; font-size: 1.2rem; margin-bottom: 2px; }
-    .nav-item span { font-size: 0.75rem; }
-
-    /* 頁面容器 */
-    .page-container { padding: 20px; animation: fadeIn 0.3s; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    /* 課程卡片 */
-    .course-card { margin-bottom: 15px; border-left: 4px solid #3273dc; }
+    body { padding: 20px; background-color: #f5f5f5; min-height: 100vh; }
+    .hidden { display: none; }
+    .loader-box { text-align: center; margin-top: 50px; }
+    .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3273dc; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .avatar-img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body>
 
-  <div id="loading" class="loader-wrapper">
-    <div class="button is-loading is-white is-large" style="border:none;"></div>
-    <p class="has-text-grey mt-3">納帝思系統連線中...</p>
+  <div id="loading" class="loader-box">
+    <div class="loader"></div>
+    <h3 class="title is-5" style="color:#3273dc">納帝思學員專區</h3>
+    <p id="status" class="has-text-grey">系統連線中...</p>
   </div>
 
-  <div id="bind-section" class="page-container hidden">
-    <div class="box">
-      <h3 class="title is-4 has-text-centered">👋 歡迎加入納帝思</h3>
-      <p class="mb-4 has-text-centered is-size-6">請輸入您的暱稱<br>若為新朋友，系統將為您自動註冊</p>
-      <div class="field">
-        <div class="control has-icons-left">
-          <input class="input is-large" type="text" id="inputKey" placeholder="例如：Tera888">
-          <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
-        </div>
+  <div id="bind-section" class="container hidden">
+    <div class="card">
+      <div class="card-content has-text-centered">
+        <h3 class="title is-4">👋 歡迎加入</h3>
+        <p class="mb-4">請輸入您的學員暱稱進行驗證</p>
+        <input class="input is-large mb-4 has-text-centered" type="text" id="inputKey" placeholder="例如：Tera888">
+        <button class="button is-link is-fullwidth is-medium" onclick="doBind()">驗證身分</button>
       </div>
-      <button class="button is-link is-fullwidth is-medium" onclick="doBind()">下一步</button>
     </div>
   </div>
 
-  <div id="pending-section" class="page-container hidden">
-    <div class="box has-text-centered">
-      <span class="icon is-large has-text-warning mb-3"><i class="fas fa-clock fa-3x"></i></span>
-      <h3 class="title is-4">帳號審核中</h3>
-      <p class="mb-4">您的註冊申請已送出。<br>請通知課務人員為您開通權限。</p>
-      <button class="button is-light is-small" onclick="location.reload()">重新整理狀態</button>
-    </div>
-  </div>
-
-  <div id="main-app" class="hidden">
-    
-    <div id="tab-profile" class="page-container">
-      <div class="box has-text-centered">
-        <figure class="image is-96x96 is-inline-block mb-3">
-          <img id="u-img" class="is-rounded" src="https://ui-avatars.com/api/?name=User&background=random" style="box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+  <div id="main-section" class="container hidden">
+    <div class="card">
+      <div class="card-content has-text-centered">
+        <figure class="image is-inline-block mb-3">
+          <img id="u-img" class="avatar-img" src="https://ui-avatars.com/api/?name=U" alt="User">
         </figure>
-        <h3 class="title is-4 mb-1" id="u-name">載入中...</h3>
-        <span class="tag is-primary is-light" id="u-type">會員</span>
-        <hr>
-        <div class="columns is-mobile">
-          <div class="column">
-            <p class="heading">會籍到期</p>
-            <p class="title is-6" id="u-expiry">-</p>
-          </div>
-          <div class="column">
-            <p class="heading">狀態</p>
-            <p class="title is-6 has-text-success">正常</p>
-          </div>
+        <h3 class="title is-4" id="u-name">學員</h3>
+        
+        <div class="tags has-addons justify-center" style="justify-content: center; margin-bottom: 20px;">
+           <span class="tag is-dark">身分</span>
+           <span class="tag is-primary is-medium" id="u-type">會員</span>
         </div>
-        <a id="u-link" href="#" target="_blank" class="button is-link is-outlined is-fullwidth mt-2">
-          <span class="icon"><i class="fab fa-facebook"></i></span>
-          <span>進入專屬社團</span>
-        </a>
+
+        <hr style="background-color: #eee; height: 1px; border: none;">
+        
+        <p class="is-size-7 has-text-grey">會籍到期日</p>
+        <p class="title is-4" id="u-expiry" style="color: #363636;">-</p>
+        
+        <br>
+        <a id="u-link" href="#" class="button is-fullwidth is-link is-outlined" target="_blank">進入專屬社團</a>
       </div>
-    </div>
-
-    <div id="tab-courses" class="page-container hidden">
-      <h3 class="title is-5 pl-2" style="border-left: 4px solid #3273dc;">📅 近期開課資訊</h3>
-      <div id="course-list-container">
-        <p class="has-text-grey has-text-centered mt-5">載入中...</p>
-      </div>
-    </div>
-
-    <div id="tab-payment" class="page-container hidden">
-      <div class="box">
-        <h3 class="title is-5 mb-3"><i class="fas fa-credit-card mr-2"></i>繳費資訊</h3>
-        <div class="content is-small">
-          <p><strong>銀行代碼：</strong> 808 (玉山銀行)</p>
-          <p><strong>帳號：</strong> 1234-5678-9012</p>
-          <p><strong>戶名：</strong> 納帝思商學院</p>
-          <hr>
-          <p class="has-text-grey">匯款後請截圖傳送給課務確認。</p>
-        </div>
-        <a href="https://line.me/R/ti/p/@your_line_id" class="button is-success is-fullwidth">
-          <span class="icon"><i class="fab fa-line"></i></span>
-          <span>通知已匯款</span>
-        </a>
-      </div>
-    </div>
-
-  </div>
-
-  <div id="bottom-nav" class="bottom-nav hidden">
-    <div class="nav-item active" onclick="switchTab('profile')">
-      <i class="fas fa-id-card"></i>
-      <span>我的資料</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('courses')">
-      <i class="fas fa-chalkboard-teacher"></i>
-      <span>近期課程</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('payment')">
-      <i class="fas fa-hand-holding-usd"></i>
-      <span>我要繳費</span>
     </div>
   </div>
 
   <script>
-    // ★★★ 請填入您的 GAS 網址 ★★★
-    const GAS_API_URL = "https://script.google.com/macros/s/xxxxxxxxx/exec";
+    // ▼▼▼ 請務必換成妳自己的 GAS 網址 (從 GAS 複製過來) ▼▼▼
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzZ7L8ZK46eEQsd3OA0G9vErxwFFuV3NmsC3rPg6NE5g28ws7vCNMI63AMwn6jGTcGQ/exec";
     
-    // ★★★ LIFF ID ★★★
+    // LIFF ID (不用改)
     const MY_LIFF_ID = "2009073759-noDIM2Wm";
 
-    let currentUserProfile = null;
-
     window.onload = function() {
-      liff.init({ liffId: MY_LIFF_ID }).then(() => {
-        if (!liff.isLoggedIn()) { liff.login(); } 
-        else {
-          liff.getProfile().then(profile => {
-            currentUserProfile = profile;
-            callGasApi("getStudentData", { userId: profile.userId });
-            // 順便預載課程資料
-            loadPublicCourses();
-          });
-        }
-      });
+      liff.init({ liffId: MY_LIFF_ID })
+        .then(() => {
+          if (!liff.isLoggedIn()) {
+            liff.login();
+          } else {
+            liff.getProfile().then(profile => {
+              document.getElementById('status').innerText = "讀取資料庫...";
+              if(profile.pictureUrl) document.getElementById('u-img').src = profile.pictureUrl;
+              callGasApi("getStudentData", { userId: profile.userId });
+            });
+          }
+        })
+        .catch(err => {
+          document.getElementById('loading').innerHTML = "<p style='color:red'>LIFF 錯誤: " + err + "</p>";
+        });
     };
 
     function callGasApi(action, data) {
@@ -168,90 +90,74 @@
       })
       .then(res => res.json())
       .then(response => {
-        document.getElementById('loading').classList.add('hidden');
-        
-        if (action === "getStudentData") {
-          if (response.status === "new_user") {
+        // 情況 A：這是「綁定動作」的回傳 (結構是 success, msg)
+        if (action === "bindUser") {
+          if (response.success) {
+            alert("🎉 綁定成功！");
+            location.reload(); // 重新整理頁面，自動登入
+          } else {
+            alert("❌ 失敗: " + response.msg);
+            // 失敗後，恢復畫面讓用戶重試 (解鎖介面)
+            document.getElementById('loading').classList.add('hidden');
             document.getElementById('bind-section').classList.remove('hidden');
-          } else if (response.status === "pending") {
-            document.getElementById('pending-section').classList.remove('hidden');
-          } else if (response.status === "success") {
-            showMainApp(response.user);
           }
-        } 
-        else if (action === "bindUser") {
-           if(response.success) {
-             alert(response.msg);
-             location.reload();
-           } else {
-             alert(response.msg);
-             document.getElementById('loading').classList.add('hidden');
-           }
+          return;
         }
-      });
-    }
 
-    function loadPublicCourses() {
-      fetch(GAS_API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getPublicCourses" })
-      })
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById('course-list-container');
-        container.innerHTML = "";
-        if(data.list && data.list.length > 0) {
-          data.list.forEach(c => {
-            container.innerHTML += `
-              <div class="box course-card">
-                <p class="title is-6">${c.name}</p>
-                <p class="subtitle is-7 has-text-grey">${c.date} | ${c.type}</p>
-              </div>`;
-          });
+        // 情況 B：這是「查詢資料」的回傳 (結構是 status, user)
+        document.getElementById('loading').classList.add('hidden');
+        if (response.status === "new_user") {
+          // 沒資料 -> 顯示綁定頁
+          document.getElementById('bind-section').classList.remove('hidden');
+        } else if (response.status === "success") {
+          // 有資料 -> 顯示會員卡
+          showUser(response.user);
         } else {
-          container.innerHTML = "<p>目前沒有公開課程</p>";
+          // 其他錯誤
+          let errorMsg = response.message || "未知錯誤";
+          alert("系統錯誤: " + errorMsg);
+        }
+      })
+      .catch(err => {
+        alert("連線失敗，請檢查網路或 GAS 網址");
+        console.error(err);
+        // 失敗時也恢復顯示，避免卡死
+        if(action === "bindUser") {
+           document.getElementById('loading').classList.add('hidden');
+           document.getElementById('bind-section').classList.remove('hidden');
         }
       });
     }
 
-    function showMainApp(user) {
-      document.getElementById('main-app').classList.remove('hidden');
-      document.getElementById('bottom-nav').classList.remove('hidden');
-      
-      // 填入資料
+    function showUser(user) {
+      document.getElementById('bind-section').classList.add('hidden');
+      document.getElementById('main-section').classList.remove('hidden');
       document.getElementById('u-name').innerText = user.name;
-      document.getElementById('u-type').innerText = user.identity === 'ANNUAL' ? '年票會員' : '學員';
-      document.getElementById('u-expiry').innerText = user.expiry;
-      document.getElementById('u-link').href = user.groupUrl;
-      if(currentUserProfile.pictureUrl) {
-         document.getElementById('u-img').src = currentUserProfile.pictureUrl;
+      document.getElementById('u-type').innerText = user.identity === 'ANNUAL' ? '年票會員' : '波段學員';
+      
+      // ★ 日期美化功能 ★
+      if (user.expiry) {
+        let d = new Date(user.expiry);
+        // 格式化成 YYYY/MM/DD
+        let dateStr = d.getFullYear() + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getDate().toString().padStart(2, '0');
+        document.getElementById('u-expiry').innerText = dateStr;
       }
+      
+      document.getElementById('u-link').href = user.groupUrl;
     }
 
     function doBind() {
       const key = document.getElementById('inputKey').value;
       if(!key) return alert("請輸入暱稱");
+      
+      // 顯示讀取中，隱藏綁定區
+      document.getElementById('status').innerText = "驗證中...";
       document.getElementById('loading').classList.remove('hidden');
-      callGasApi("bindUser", { userId: currentUserProfile.userId, key: key });
-    }
+      document.getElementById('bind-section').classList.add('hidden');
 
-    // 切換分頁邏輯
-    function switchTab(tabName) {
-      // 隱藏所有分頁
-      ['profile', 'courses', 'payment'].forEach(t => {
-        document.getElementById('tab-' + t).classList.add('hidden');
+      liff.getProfile().then(profile => {
+        callGasApi("bindUser", { userId: profile.userId, key: key });
       });
-      // 顯示目標分頁
-      document.getElementById('tab-' + tabName).classList.remove('hidden');
-      
-      // 更新按鈕狀態
-      const items = document.querySelectorAll('.nav-item');
-      items.forEach(item => item.classList.remove('active'));
-      
-      // 根據點擊的位置亮燈 (這裡簡單處理，建議依順序)
-      if(tabName === 'profile') items[0].classList.add('active');
-      if(tabName === 'courses') items[1].classList.add('active');
-      if(tabName === 'payment') items[2].classList.add('active');
     }
   </script>
 </body>
