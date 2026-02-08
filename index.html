@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>納帝思學員專區</title>
+  <title>納帝思學員專區 V2</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <style>
@@ -20,7 +20,8 @@
   <div id="loading" class="loader-box">
     <div class="loader"></div>
     <h3 class="title is-5" style="color:#3273dc">納帝思學員專區</h3>
-    <p id="status" class="has-text-grey">系統連線中...</p>
+    <span class="tag is-warning is-light">Ver 2.0</span>
+    <p id="status" class="has-text-grey mt-2">系統連線中...</p>
   </div>
 
   <div id="bind-section" class="container hidden">
@@ -59,7 +60,7 @@
   </div>
 
   <script>
-    // ▼▼▼ 請務必換成妳自己的 GAS 網址 (從 GAS 複製過來) ▼▼▼
+    // ▼▼▼ 請務必填入你的 GAS 網址 (後面是 /exec 結尾那個) ▼▼▼
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzZ7L8ZK46eEQsd3OA0G9vErxwFFuV3NmsC3rPg6NE5g28ws7vCNMI63AMwn6jGTcGQ/exec";
     
     // LIFF ID (不用改)
@@ -90,38 +91,33 @@
       })
       .then(res => res.json())
       .then(response => {
-        // 情況 A：這是「綁定動作」的回傳 (結構是 success, msg)
+        // ★ 關鍵修正：這裡專門處理綁定結果，不會再 undefined 了 ★
         if (action === "bindUser") {
           if (response.success) {
             alert("🎉 綁定成功！");
-            location.reload(); // 重新整理頁面，自動登入
+            location.reload(); 
           } else {
             alert("❌ 失敗: " + response.msg);
-            // 失敗後，恢復畫面讓用戶重試 (解鎖介面)
+            // 失敗後恢復畫面，讓你重打
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('bind-section').classList.remove('hidden');
           }
           return;
         }
 
-        // 情況 B：這是「查詢資料」的回傳 (結構是 status, user)
+        // 一般查詢結果
         document.getElementById('loading').classList.add('hidden');
         if (response.status === "new_user") {
-          // 沒資料 -> 顯示綁定頁
           document.getElementById('bind-section').classList.remove('hidden');
         } else if (response.status === "success") {
-          // 有資料 -> 顯示會員卡
           showUser(response.user);
         } else {
-          // 其他錯誤
-          let errorMsg = response.message || "未知錯誤";
-          alert("系統錯誤: " + errorMsg);
+          alert("系統錯誤: " + (response.message || "未知原因"));
         }
       })
       .catch(err => {
-        alert("連線失敗，請檢查網路或 GAS 網址");
-        console.error(err);
-        // 失敗時也恢復顯示，避免卡死
+        alert("連線失敗，請檢查 GAS 網址是否正確");
+        // 失敗時也恢復顯示
         if(action === "bindUser") {
            document.getElementById('loading').classList.add('hidden');
            document.getElementById('bind-section').classList.remove('hidden');
@@ -135,14 +131,12 @@
       document.getElementById('u-name').innerText = user.name;
       document.getElementById('u-type').innerText = user.identity === 'ANNUAL' ? '年票會員' : '波段學員';
       
-      // ★ 日期美化功能 ★
+      // 日期美化
       if (user.expiry) {
         let d = new Date(user.expiry);
-        // 格式化成 YYYY/MM/DD
         let dateStr = d.getFullYear() + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getDate().toString().padStart(2, '0');
         document.getElementById('u-expiry').innerText = dateStr;
       }
-      
       document.getElementById('u-link').href = user.groupUrl;
     }
 
@@ -150,7 +144,6 @@
       const key = document.getElementById('inputKey').value;
       if(!key) return alert("請輸入暱稱");
       
-      // 顯示讀取中，隱藏綁定區
       document.getElementById('status').innerText = "驗證中...";
       document.getElementById('loading').classList.remove('hidden');
       document.getElementById('bind-section').classList.add('hidden');
