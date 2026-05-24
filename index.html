@@ -1,157 +1,184 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>納帝思學員專區 V2</title>
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>阿珀開發｜溫柔但專業的數位開發夥伴</title>
+  <meta name="description" content="阿珀陪你把複雜營運流程整理成好用的數位系統，提供 LINE Bot、Excel 微型系統、品牌內容規劃與後勤支援。" />
+  <meta property="og:title" content="阿珀開發｜溫柔但專業的數位開發夥伴" />
+  <meta property="og:description" content="把複雜營運流程，整理成好用的數位系統。" />
+  <meta property="og:image" content="assets/hero.png" />
   <style>
-    body { padding: 20px; background-color: #f5f5f5; min-height: 100vh; }
-    .hidden { display: none; }
-    .loader-box { text-align: center; margin-top: 50px; }
-    .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3273dc; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .avatar-img { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    :root{
+      --brand:#064E3B;
+      --brand-2:#0F6B4F;
+      --cream:#F8F3EA;
+      --warm:#FBF7F0;
+      --card:#FFFDF8;
+      --coffee:#8B5E3C;
+      --text:#17202A;
+      --muted:#5F6B66;
+      --line:#DDE7DE;
+      --shadow:0 18px 50px rgba(23,32,42,.08);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth; background:var(--warm);}
+    body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif; color:var(--text); background:linear-gradient(180deg,#fffdf8 0%,#fbf7f0 100%);}
+    a{color:inherit}
+    .site{width:100%; overflow:hidden;}
+    .section{position:relative; width:100%; scroll-margin-top:80px; background:#fffdf8;}
+    .section img{display:block; width:100%; height:auto; user-select:none; -webkit-user-drag:none;}
+    .section + .section{margin-top:0;}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+    /* Desktop: make the baked-in hero menu/buttons clickable with invisible hotspots */
+    .hotspot{position:absolute; display:block; border-radius:999px; text-indent:-9999px; overflow:hidden; outline-offset:4px;}
+    .hotspot:focus-visible{outline:3px solid rgba(15,107,79,.55); background:rgba(15,107,79,.08);}
+    .hs-services{left:48.2%;top:4.3%;width:6.3%;height:5.3%;}
+    .hs-process{left:56.2%;top:4.3%;width:6.8%;height:5.3%;}
+    .hs-content{left:64.8%;top:4.3%;width:6.9%;height:5.3%;}
+    .hs-about{left:73.1%;top:4.3%;width:6.9%;height:5.3%;}
+    .hs-contact{left:81.6%;top:4.3%;width:7.2%;height:5.3%;}
+    .hs-cta{left:88.7%;top:2.7%;width:8.7%;height:8.0%;}
+    .hs-book{left:5.3%;top:57.9%;width:14.0%;height:7.3%;}
+    .hs-more{left:20.7%;top:57.9%;width:12.4%;height:7.3%;}
+
+    .mobile-nav{display:none; position:sticky; top:0; z-index:20; padding:10px 12px; gap:8px; overflow:auto; background:rgba(255,253,248,.94); backdrop-filter:blur(12px); border-bottom:1px solid rgba(221,231,222,.9); box-shadow:0 10px 30px rgba(23,32,42,.05);}
+    .mobile-nav a{flex:0 0 auto; text-decoration:none; color:var(--brand); border:1px solid var(--line); background:#fffdf8; padding:8px 12px; border-radius:999px; font-size:14px; font-weight:700; white-space:nowrap;}
+    .mobile-nav .primary{background:var(--brand); color:white; border-color:var(--brand);}
+
+    .faq-section{padding:32px clamp(16px, 4vw, 72px) 52px; background:#fffdf8;}
+    .faq-wrap{max-width:1390px; margin:0 auto; border:1px solid #eadcc8; background:rgba(255,253,248,.86); border-radius:28px; padding:clamp(16px,2vw,28px); box-shadow:var(--shadow);}
+    .faq-label{width:max-content; margin:-43px auto 18px; padding:8px 26px; border:1px solid #d8c8b0; background:#fffdf8; color:var(--brand); border-radius:999px; font-weight:900; letter-spacing:.08em; box-shadow:0 8px 24px rgba(139,94,60,.06);}
+    .faq-list{display:grid; gap:12px;}
+    details.faq-item{border:1px solid #eadcc8; background:linear-gradient(180deg,#fffdf8 0%,#fbf7f0 100%); border-radius:18px; overflow:hidden; transition:.2s ease;}
+    details.faq-item[open]{box-shadow:0 12px 34px rgba(23,32,42,.06); border-color:#dbc7aa;}
+    .faq-item summary{list-style:none; cursor:pointer; display:grid; grid-template-columns:54px 1fr auto; align-items:center; gap:18px; padding:18px clamp(16px,2vw,28px); font-weight:900; font-size:clamp(18px,1.8vw,28px); color:var(--text);}
+    .faq-item summary::-webkit-details-marker{display:none}
+    .faq-icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:#edf3e8;border:1px solid #dce8d5;color:var(--brand);font-size:25px;}
+    .faq-arrow{width:28px;height:28px;position:relative;}
+    .faq-arrow::before,.faq-arrow::after{content:""; position:absolute; background:var(--brand); border-radius:99px; transition:.2s ease;}
+    .faq-arrow::before{width:18px;height:3px;left:5px;top:13px;}
+    .faq-arrow::after{width:3px;height:18px;left:13px;top:5px;}
+    details[open] .faq-arrow::after{transform:rotate(90deg); opacity:0;}
+    .faq-answer{margin:0; padding:0 clamp(16px,2vw,28px) 22px calc(clamp(16px,2vw,28px) + 72px); color:var(--muted); font-size:clamp(16px,1.35vw,21px); line-height:1.8;}
+    .faq-answer strong{color:var(--brand);}
+    .faq-footer{margin:22px auto 0; max-width:1260px; display:flex; align-items:center; justify-content:center; gap:20px; padding:22px 28px; border:1px solid #eadcc8; border-radius:18px; background:#fbf7f0; color:var(--text); font-size:clamp(18px,1.6vw,26px); line-height:1.6; text-align:center;}
+    .faq-footer strong{color:var(--brand);}
+    .faq-footer .cup{font-size:32px;}
+
+    .contact-actions{position:absolute; inset:0; pointer-events:none;}
+    .contact-actions a{position:absolute; display:block; pointer-events:auto; text-indent:-9999px; overflow:hidden; border-radius:16px; outline-offset:4px;}
+    .contact-actions a:focus-visible{outline:3px solid rgba(15,107,79,.55); background:rgba(15,107,79,.08);}
+    .contact-line{left:6.1%; top:53.9%; width:21.0%; height:10.2%;}
+    .contact-email{left:28.2%; top:53.9%; width:17.0%; height:10.2%;}
+
+    @media (max-width: 820px){
+      .mobile-nav{display:flex;}
+      .hotspot{display:none;}
+      .section{scroll-margin-top:58px;}
+      .faq-section{padding:26px 12px 38px;}
+      .faq-wrap{border-radius:20px; padding:18px 12px 16px;}
+      .faq-label{margin:-37px auto 14px; font-size:14px; padding:7px 18px;}
+      .faq-item summary{grid-template-columns:40px 1fr auto; gap:12px; padding:14px 12px; font-size:17px;}
+      .faq-icon{width:40px;height:40px;font-size:20px;}
+      .faq-answer{padding:0 14px 16px 64px; font-size:15px;}
+      .faq-footer{font-size:16px; padding:16px 14px; gap:10px;}
+      .faq-footer .cup{display:none;}
+      .contact-line{left:6.1%; top:53.5%; width:21.5%; height:11%;}
+      .contact-email{left:28.0%; top:53.5%; width:17.5%; height:11%;}
+    }
   </style>
 </head>
 <body>
+  <nav class="mobile-nav" aria-label="手機版導覽">
+    <a href="#services">服務項目</a>
+    <a href="#process">開發流程</a>
+    <a href="#content">品牌內容</a>
+    <a href="#about">關於阿珀</a>
+    <a href="#contact">聯絡我們</a>
+    <a class="primary" href="https://line.me/R/ti/p/@appdevelop" target="_blank" rel="noopener">立即諮詢</a>
+  </nav>
 
-  <div id="loading" class="loader-box">
-    <div class="loader"></div>
-    <h3 class="title is-5" style="color:#3273dc">納帝思學員專區</h3>
-    <span class="tag is-warning is-light">Ver 2.0</span>
-    <p id="status" class="has-text-grey mt-2">系統連線中...</p>
-  </div>
+  <main class="site">
+    <section id="home" class="section hero" aria-label="首頁">
+      <h1 class="sr-only">阿珀開發，把複雜營運流程整理成好用的數位系統</h1>
+      <img src="assets/hero.png" alt="阿珀開發首頁主視覺：把複雜營運流程整理成好用的數位系統" />
+      <a class="hotspot hs-services" href="#services">服務項目</a>
+      <a class="hotspot hs-process" href="#process">開發流程</a>
+      <a class="hotspot hs-content" href="#content">品牌內容</a>
+      <a class="hotspot hs-about" href="#about">關於阿珀</a>
+      <a class="hotspot hs-contact" href="#contact">聯絡我們</a>
+      <a class="hotspot hs-cta" href="https://line.me/R/ti/p/@appdevelop" target="_blank" rel="noopener">立即諮詢</a>
+      <a class="hotspot hs-book" href="https://line.me/R/ti/p/@appdevelop" target="_blank" rel="noopener">預約諮詢</a>
+      <a class="hotspot hs-more" href="#services">了解服務</a>
+    </section>
 
-  <div id="bind-section" class="container hidden">
-    <div class="card">
-      <div class="card-content has-text-centered">
-        <h3 class="title is-4">👋 歡迎加入</h3>
-        <p class="mb-4">請輸入您的學員暱稱進行驗證</p>
-        <input class="input is-large mb-4 has-text-centered" type="text" id="inputKey" placeholder="例如：Tera888">
-        <button class="button is-link is-fullwidth is-medium" onclick="doBind()">驗證身分</button>
-      </div>
-    </div>
-  </div>
+    <section id="about" class="section" aria-label="營運痛點與關於阿珀">
+      <h2 class="sr-only">日常營運總是卡關，讓你無法專注在真正重要的事？</h2>
+      <img src="assets/pain.png" alt="日常營運困擾：客服訊息回不完、報表庫存耗時、網路發文缺乏時間與靈感" loading="lazy" />
+    </section>
 
-  <div id="main-section" class="container hidden">
-    <div class="card">
-      <div class="card-content has-text-centered">
-        <figure class="image is-inline-block mb-3">
-          <img id="u-img" class="avatar-img" src="https://ui-avatars.com/api/?name=U" alt="User">
-        </figure>
-        <h3 class="title is-4" id="u-name">學員</h3>
-        
-        <div class="tags has-addons justify-center" style="justify-content: center; margin-bottom: 20px;">
-           <span class="tag is-dark">身分</span>
-           <span class="tag is-primary is-medium" id="u-type">會員</span>
+    <section id="services" class="section" aria-label="LINE Bot 主力服務">
+      <h2 class="sr-only">把官網功能、學員管理與預約流程直接搬進 LINE</h2>
+      <img src="assets/linebot.png" alt="LINE Bot 主力服務：學員管理系統可直接套用，預約、提醒與會員管理更順手" loading="lazy" />
+    </section>
+
+    <section id="content" class="section" aria-label="延伸支援服務">
+      <h2 class="sr-only">Excel 微型系統設計與品牌內容規劃代操支援</h2>
+      <img src="assets/support.png" alt="延伸支援服務：Excel 微型系統設計、品牌內容規劃與代操支援" loading="lazy" />
+    </section>
+
+    <section id="process" class="section" aria-label="合作流程">
+      <h2 class="sr-only">簡單四步驟，讓專案順利落地</h2>
+      <img src="assets/process.png" alt="合作流程：需求溝通、方案與報價、執行與測試、交付與支援" loading="lazy" />
+    </section>
+
+    <section class="faq-section" aria-label="常見問題 FAQ">
+      <div class="faq-wrap">
+        <div class="faq-label">常見問題 FAQ</div>
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary><span class="faq-icon">＄</span><span>我的預算不高也可以做嗎？</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+            <p class="faq-answer">可以。阿珀會依照你的階段，建議先從最需要改善的地方開始，用最划算的方式幫你解決最關鍵的問題。</p>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-icon">🛠</span><span>一定要客製開發嗎？</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+            <p class="faq-answer">不一定。有些工具可以直接上路，也可以依照你的流程客製調整，彈性配合你的需求。</p>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-icon">X</span><span>Excel 表單壞了或想加功能可以處理嗎？</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+            <p class="faq-answer">可以，可以協助檢查、維修、優化與重新設計，讓你的表單更穩定、好用又安全。</p>
+          </details>
+          <details class="faq-item">
+            <summary><span class="faq-icon">✎</span><span>內容代操可以只做單次企劃嗎？</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+            <p class="faq-answer">可以，可以單次規劃，也可以長期配合，依你的目標與預算彈性安排最適合的方案。</p>
+          </details>
         </div>
-
-        <hr style="background-color: #eee; height: 1px; border: none;">
-        
-        <p class="is-size-7 has-text-grey">會籍到期日</p>
-        <p class="title is-4" id="u-expiry" style="color: #363636;">-</p>
-        
-        <br>
-        <a id="u-link" href="#" class="button is-fullwidth is-link is-outlined" target="_blank">進入專屬社團</a>
+        <div class="faq-footer"><span class="cup">☕</span><span>流程透明、溝通順暢、專案可控，就是我們合作的基礎。<strong>有任何疑問，歡迎隨時與我們聊聊！</strong></span></div>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <section id="contact" class="section contact" aria-label="聯絡阿珀">
+      <h2 class="sr-only">準備好把繁瑣交給系統了嗎？</h2>
+      <img src="assets/contact.png" alt="準備好把繁瑣交給系統了嗎？立即加 LINE 或寄 Email 諮詢" loading="lazy" />
+      <div class="contact-actions" aria-label="聯絡按鈕">
+        <a class="contact-line" href="https://line.me/R/ti/p/@appdevelop" target="_blank" rel="noopener">立即加 LINE 聊聊需求：@appdevelop</a>
+        <a class="contact-email" href="mailto:service@appdevelop.com">寄 Email 諮詢：service@appdevelop.com</a>
+      </div>
+    </section>
+  </main>
 
   <script>
-    // ▼▼▼ 請務必填入你的 GAS 網址 (後面是 /exec 結尾那個) ▼▼▼
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzZ7L8ZK46eEQsd3OA0G9vErxwFFuV3NmsC3rPg6NE5g28ws7vCNMI63AMwn6jGTcGQ/exec";
-    
-    // LIFF ID (不用改)
-    const MY_LIFF_ID = "2009073759-noDIM2Wm";
-
-    window.onload = function() {
-      liff.init({ liffId: MY_LIFF_ID })
-        .then(() => {
-          if (!liff.isLoggedIn()) {
-            liff.login();
-          } else {
-            liff.getProfile().then(profile => {
-              document.getElementById('status').innerText = "讀取資料庫...";
-              if(profile.pictureUrl) document.getElementById('u-img').src = profile.pictureUrl;
-              callGasApi("getStudentData", { userId: profile.userId });
-            });
-          }
-        })
-        .catch(err => {
-          document.getElementById('loading').innerHTML = "<p style='color:red'>LIFF 錯誤: " + err + "</p>";
+    // FAQ: keep one answer open at a time, while still using native <details> for accessibility.
+    document.querySelectorAll('.faq-item').forEach((item) => {
+      item.addEventListener('toggle', () => {
+        if (!item.open) return;
+        document.querySelectorAll('.faq-item[open]').forEach((other) => {
+          if (other !== item) other.open = false;
         });
-    };
-
-    function callGasApi(action, data) {
-      fetch(GAS_API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: action, ...data })
-      })
-      .then(res => res.json())
-      .then(response => {
-        // ★ 關鍵修正：這裡專門處理綁定結果，不會再 undefined 了 ★
-        if (action === "bindUser") {
-          if (response.success) {
-            alert("🎉 綁定成功！");
-            location.reload(); 
-          } else {
-            alert("❌ 失敗: " + response.msg);
-            // 失敗後恢復畫面，讓你重打
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('bind-section').classList.remove('hidden');
-          }
-          return;
-        }
-
-        // 一般查詢結果
-        document.getElementById('loading').classList.add('hidden');
-        if (response.status === "new_user") {
-          document.getElementById('bind-section').classList.remove('hidden');
-        } else if (response.status === "success") {
-          showUser(response.user);
-        } else {
-          alert("系統錯誤: " + (response.message || "未知原因"));
-        }
-      })
-      .catch(err => {
-        alert("連線失敗，請檢查 GAS 網址是否正確");
-        // 失敗時也恢復顯示
-        if(action === "bindUser") {
-           document.getElementById('loading').classList.add('hidden');
-           document.getElementById('bind-section').classList.remove('hidden');
-        }
       });
-    }
-
-    function showUser(user) {
-      document.getElementById('bind-section').classList.add('hidden');
-      document.getElementById('main-section').classList.remove('hidden');
-      document.getElementById('u-name').innerText = user.name;
-      document.getElementById('u-type').innerText = user.identity === 'ANNUAL' ? '年票會員' : '波段學員';
-      
-      // 日期美化
-      if (user.expiry) {
-        let d = new Date(user.expiry);
-        let dateStr = d.getFullYear() + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getDate().toString().padStart(2, '0');
-        document.getElementById('u-expiry').innerText = dateStr;
-      }
-      document.getElementById('u-link').href = user.groupUrl;
-    }
-
-    function doBind() {
-      const key = document.getElementById('inputKey').value;
-      if(!key) return alert("請輸入暱稱");
-      
-      document.getElementById('status').innerText = "驗證中...";
-      document.getElementById('loading').classList.remove('hidden');
-      document.getElementById('bind-section').classList.add('hidden');
-
-      liff.getProfile().then(profile => {
-        callGasApi("bindUser", { userId: profile.userId, key: key });
-      });
-    }
+    });
   </script>
 </body>
 </html>
